@@ -55,3 +55,12 @@ Features:
 - Make sure app functionality works as expected. Run and test it well.
 - Containerized and run the app using Docker.
 - Using `docker-compose` or any automation script to run the app with single command is a plus.
+
+
+<hr/>
+
+# Implementation
+
+## Database Design
+
+[DB Schema (dbdiagram.io)](https://dbdiagram.io/d/concrete-ai-account-service-db-663e06929e85a46d558134f0)
