@@ -1,6 +1,9 @@
 import fastify from 'fastify';
+import authRoutes from './routes/auth.routes';
 
 const server = fastify();
+
+server.register(authRoutes, { prefix: "/auth" });
 
 server.get('/ping', async (request, reply) => {
   return 'pong\n pung \n  pang\n   peng';
