@@ -1,4 +1,7 @@
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const SALT = Number(process.env.HASH_SALT);
 
