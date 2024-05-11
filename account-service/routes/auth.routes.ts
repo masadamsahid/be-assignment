@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { sendErrorZodValidationReply, sendError, sendReply } from "../lib/custom-reply";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { hashPwd } from "../lib/hashing";
 
 type RegisterDto = {
   username: string;
@@ -32,11 +33,15 @@ const authRoutes: FastifyPluginAsync = async (fastify, opt) => {
       const { data, error } = registerSchema.safeParse(body);
       if (error) return sendErrorZodValidationReply(reply, error);
 
-      // TODO: save user data to DB using Prisma
       delete data.confirmPassword;
+      data.password = await hashPwd(data.password);
+      
       let newUser;
       try {
-        newUser = await fastify.prisma.user.create({ data });
+        newUser = await fastify.prisma.user.create({
+          data,
+          select: { username: true },
+        });
       } catch (error) {
         if(
           error instanceof PrismaClientKnownRequestError
@@ -45,7 +50,7 @@ const authRoutes: FastifyPluginAsync = async (fastify, opt) => {
         throw error;
       }
 
-      return sendReply(reply, { data: newUser });
+      return sendReply(reply, { message: "Success register user", data: newUser });
     } catch (error) {
       console.log("[ERR_AUTH_REGISTER_POST]:", error);
       return sendError(reply);
