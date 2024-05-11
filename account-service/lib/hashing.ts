@@ -11,4 +11,11 @@ export const hashPwd = async (strPassword: string) => {
   }
 }
 
-
+export const compareHashPwd = async (strPassword: string, hashedPassword: string) => {
+  try {
+    return await bcrypt.compare(strPassword, hashedPassword);
+  } catch (error: any) {
+    error.message = `[ERR_COMPARE_HASH_PWD] ${error.message}`;
+    throw error;
+  }
+}

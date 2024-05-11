@@ -2,7 +2,7 @@ import { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { sendErrorZodValidationReply, sendError, sendReply } from "../lib/custom-reply";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { hashPwd } from "../lib/hashing";
+import { compareHashPwd, hashPwd } from "../lib/hashing";
 
 type RegisterDto = {
   username: string;
@@ -71,8 +71,15 @@ const authRoutes: FastifyPluginAsync = async (fastify, opt) => {
       if (error) return sendErrorZodValidationReply(reply, error);
 
       // TODO: authenticate user data
+      const user = await fastify.prisma.user.findUnique({
+        where: { username: data.username },
+      });
+      if (!user) return sendError(reply, { code: 400, message: "Wrong credentials" });
+      
+      const isPwdMatch = await compareHashPwd(data.password, user.password);
+      if (!isPwdMatch) return sendError(reply, { code: 400, message: "Wrong credentials" });
 
-      return sendReply(reply, { data });
+      return sendReply(reply, { message: "Authentication success", data });
     } catch (error) {
       console.log("[ERR_AUTH_LOGIN_POST]:", error);
       return sendError(reply);
