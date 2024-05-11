@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@joggr/fastify-prisma": "^2.0.1",
     "@prisma/client": "^5.13.0",
     "@types/bcrypt": "^5.0.2",
     "bcrypt": "^5.1.1",

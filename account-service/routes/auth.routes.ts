@@ -1,11 +1,12 @@
 import { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { sendErrorZodValidationReply, sendError, sendReply } from "../lib/custom-reply";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 type RegisterDto = {
   username: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 }
 
 type LoginDto = {
@@ -22,7 +23,7 @@ const authRoutes: FastifyPluginAsync = async (fastify, opt) => {
       const registerSchema = z.object({
         username: z.string().min(4).max(32).regex(/[a-zA-Z0-9]/gi),
         password: z.string().min(4).max(128),
-        confirmPassword: z.string(),
+        confirmPassword: z.string().optional(),
       }).refine((schema) => schema.confirmPassword === schema.password, {
         message: "Confirm password must match",
         path: ["confirmPassword"],
@@ -32,8 +33,19 @@ const authRoutes: FastifyPluginAsync = async (fastify, opt) => {
       if (error) return sendErrorZodValidationReply(reply, error);
 
       // TODO: save user data to DB using Prisma
+      delete data.confirmPassword;
+      let newUser;
+      try {
+        newUser = await fastify.prisma.user.create({ data });
+      } catch (error) {
+        if(
+          error instanceof PrismaClientKnownRequestError
+          && error.code === "P2002"
+        ) return sendError(reply, { code: 400, message: "Username already taken" });
+        throw error;
+      }
 
-      return sendReply(reply, { data });
+      return sendReply(reply, { data: newUser });
     } catch (error) {
       console.log("[ERR_AUTH_REGISTER_POST]:", error);
       return sendError(reply);
