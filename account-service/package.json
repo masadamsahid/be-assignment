@@ -13,11 +13,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fastify": "^4.27.0"
+    "@joggr/fastify-prisma": "^2.0.1",
+    "@prisma/client": "^5.13.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.6",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.27.0",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20.12.11",
     "nodemon": "^3.1.0",
+    "prisma": "^5.13.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }
