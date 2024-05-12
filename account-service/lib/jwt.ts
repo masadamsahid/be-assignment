@@ -12,4 +12,9 @@ export const generateAuthToken = ({ id, username }: AuthTokenPayload) => {
   return jwt.sign({ id, username }, JWT_AUTH_SECRET, { expiresIn: '1d' });
 }
 
+export const verifyAuthToken = (token: string) => {
+  const { id, username } = jwt.verify(token, JWT_AUTH_SECRET) as any;
+  return { id, username };
+}
+
 

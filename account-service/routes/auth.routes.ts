@@ -26,7 +26,7 @@ const authRoutes: FastifyPluginAsync = async (fastify, opt) => {
         username: z.string().min(4).max(32).regex(/[a-zA-Z0-9]/gi),
         password: z.string().min(4).max(128),
         confirmPassword: z.string().optional(),
-      }).refine((schema) => schema.confirmPassword === schema.password, {
+      }, { message: "Please fill the required fields" }).refine((schema) => schema.confirmPassword === schema.password, {
         message: "Confirm password must match",
         path: ["confirmPassword"],
       });
@@ -68,7 +68,7 @@ const authRoutes: FastifyPluginAsync = async (fastify, opt) => {
       const registerSchema = z.object({
         username: z.string().min(4).max(32).regex(/[a-zA-Z0-9]/gi),
         password: z.string().min(4).max(128),
-      });
+      }, { message: "Please fill the required fields" });
 
       const { data, error } = registerSchema.safeParse(body);
       if (error) return sendErrorZodValidationReply(reply, error);

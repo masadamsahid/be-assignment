@@ -17,11 +17,11 @@ model User {
   id       Int    @id @default(autoincrement())
   username String @unique
   password String @db.Text
-  
-  accounts    Account[]
 
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  accounts Account[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@map("users")
 }
@@ -34,6 +34,7 @@ enum AccountType {
 
 model Account {
   id      Int         @id @default(autoincrement())
+  name    String      @db.VarChar(255)
   type    AccountType
   balance Int         @default(0)
 
